@@ -7,8 +7,8 @@ import time
 
 USER = 'sim47'
 PW = '8202,push'
-API_KEY = '1341654461:AAFmNqXa_dCtjfdB8k_udme4JAsVzwL1jkI'
-BOT_HANDLE = '@MyNewGirlfriendBot'
+API_KEY = '5129846687:AAEpOc_6NBPGSCdc2A5VQV9SpmQBV_mSWeI'
+BOT_HANDLE = '@boilerjrbot'
 
 def main():
     options = webdriver.ChromeOptions() 
