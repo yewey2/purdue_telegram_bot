@@ -90,7 +90,7 @@ swipes_handler = CommandHandler('swipes', swipes_command)
 dispatcher.add_handler(swipes_handler)
 
 if __name__ == "__main__":
-    main()
+    # main()
     try:
         updater.start_polling()
         updater.idle()
