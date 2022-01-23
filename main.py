@@ -13,7 +13,7 @@ BOT_HANDLE = '@MyNewGirlfriendBot'
 def main():
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
-    #options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -24,16 +24,17 @@ def main():
 
     driver.get('https://eacct-purdue-sp.transactcampus.com/purdueeaccounts/AnonymousHome.aspx')
     driver.find_element('id',"MainContent_SignInButton").click()
-    
+    time.sleep(2)
     userfield = driver.find_element('id','username')
     passfield = driver.find_element('id','password')
     userfield.send_keys(USER)
     passfield.send_keys(PW)
 
     submit_btn1 = driver.find_element('name',"submit").click()
+    time.sleep(5)
     driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
    
-    time.sleep(10)
+    time.sleep(15)
 
     meals_left = driver.find_element('id','MainContent_mprWeekValue').text
     return meals_left
@@ -66,8 +67,8 @@ dispatcher.add_handler(start_handler)
 
 
 def swipes_command(update,context):
-    """Restart @orc4bikes_bot"""
-    text = 'Please login with DuoMobile'
+    """Get meal swipes"""
+    text = 'Please login with DuoMobile, and allow for ~30 seconds for me to retrieve your info!'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text)
@@ -89,7 +90,7 @@ swipes_handler = CommandHandler('swipes', swipes_command)
 dispatcher.add_handler(swipes_handler)
 
 if __name__ == "__main__":
-    # main()
+    main()
     try:
         updater.start_polling()
         updater.idle()
