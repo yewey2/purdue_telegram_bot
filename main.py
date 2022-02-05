@@ -33,6 +33,7 @@ DEBUG = False
 
 ACCESS_KEY = os.environ.get('ACCESS_KEY')
 SECRET_KEY = os.environ.get('SECRET_KEY')
+REGION_NAME = os.environ.get('REGION_NAME')
 TABLE_NAME = os.environ.get('TABLE_NAME')
 
 def create_table(dynamodb=None):
@@ -40,6 +41,7 @@ def create_table(dynamodb=None):
         dynamodb = boto3.resource('dynamodb',
             aws_access_key_id=ACCESS_KEY,
             aws_secret_access_key=SECRET_KEY,
+            region_name=REGION_NAME,
         )
     try:
         table = dynamodb.create_table(
@@ -85,6 +87,7 @@ def get_user_data(chat_id=None, dynamodb=None):
             'dynamodb',
             aws_access_key_id=ACCESS_KEY,
             aws_secret_access_key=SECRET_KEY,
+            region_name=REGION_NAME,
         )
     table = dynamodb.Table(TABLE_NAME)
     response = None
@@ -108,6 +111,7 @@ def set_user_data(chat_id=None, username="", password="", dynamodb=None):
             'dynamodb',
             aws_access_key_id=ACCESS_KEY,
             aws_secret_access_key=SECRET_KEY,
+            region_name=REGION_NAME,
         )
     table = dynamodb.Table(TABLE_NAME)
     try:
