@@ -5,7 +5,9 @@ from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
-import db_controller as db
+import boto3
+from botocore.exceptions import ClientError
+# import db_controller as db
 
 from telegram.ext import (
     Updater,
@@ -28,6 +30,106 @@ from telegram import (
 API_KEY = os.environ.get('API_KEY')
 BOT_HANDLE = os.environ.get('BOT_HANDLE')
 DEBUG = False
+
+ACCESS_KEY = os.environ.get('ACCESS_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+TABLE_NAME = os.environ.get('TABLE_NAME')
+
+def create_table(dynamodb=None):
+    if not dynamodb:
+        dynamodb = boto3.resource('dynamodb',
+            aws_access_key_id=ACCESS_KEY,
+            aws_secret_access_key=SECRET_KEY,
+        )
+    try:
+        table = dynamodb.create_table(
+            TableName=TABLE_NAME,
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'chat_id',
+                    'AttributeType': 'N'
+                },
+                # {
+                #     'AttributeName': 'username',
+                #     'AttributeType': 'S'
+                # },
+                # {
+                #     'AttributeName': 'password',
+                #     'AttributeType': 'S'
+                # },
+            ],
+            KeySchema=[
+                {
+                    'AttributeName': 'chat_id',
+                    'KeyType': 'HASH'  
+                },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
+            }
+        )
+        return table
+    except ClientError:
+        return None
+    finally:
+        return None
+
+def get_user_data(chat_id=None, dynamodb=None):
+    """Getting single entry"""
+    if not chat_id:
+        return None
+    create_table()
+    if not dynamodb:
+        dynamodb = boto3.resource(
+            'dynamodb',
+            aws_access_key_id=ACCESS_KEY,
+            aws_secret_access_key=SECRET_KEY,
+        )
+    table = dynamodb.Table(TABLE_NAME)
+    response = None
+    try:
+        response = table.get_item(Key={'chat_id': chat_id})['Item']
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    except KeyError as e:
+        print('Key Error! Item not found')
+        print(e)
+    finally:
+        return response
+
+def set_user_data(chat_id=None, username="", password="", dynamodb=None):
+    """Updating single entry"""
+    if not chat_id:
+        return None
+    create_table()
+    if not dynamodb:
+        dynamodb = boto3.resource(
+            'dynamodb',
+            aws_access_key_id=ACCESS_KEY,
+            aws_secret_access_key=SECRET_KEY,
+        )
+    table = dynamodb.Table(TABLE_NAME)
+    try:
+        response = table.update_item(
+            Key={
+                'chat_id': chat_id,
+            },
+            UpdateExpression="set username=:u, password=:p",
+            ExpressionAttributeValues={
+                ':u': username,
+                ':p': password
+            },
+            ReturnValues="UPDATED_NEW"
+        )
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    except KeyError as e:
+        print('Key Error! Item not found')
+        print(e)
+    finally:
+        return response
+
 
 def main(username='', password='',):
     options = webdriver.ChromeOptions() 
@@ -105,7 +207,7 @@ dispatcher.add_handler(terms_handler)
 
 def swipes_command(update,context):
     """Get meal swipes"""
-    user_data = db.get_user_data(update.message.from_user.id)
+    user_data = get_user_data(update.message.from_user.id)
     if not user_data:
         text = 'Sorry, please /login first!'
         context.bot.send_message(
@@ -169,7 +271,7 @@ def login_done(update,context):
         password += ",push"
     username = context.user_data['username']
     chat_id = update.message.from_user.id
-    db.set_user_data(chat_id, username, password)
+    set_user_data(chat_id, username, password)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=f"Your username and password is as follows:\n\
