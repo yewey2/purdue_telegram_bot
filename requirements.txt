@@ -2,3 +2,4 @@ python-telegram-bot
 requests
 selenium==4.1.0
 webdriver_manager==3.5.2
+boto3==1.20.23
