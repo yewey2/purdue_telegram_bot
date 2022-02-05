@@ -156,10 +156,10 @@ def main(username='', password='',):
     passfield.send_keys(password)
 
     submit_btn1 = driver.find_element('name',"submit").click()
-    time.sleep(2)
+    time.sleep(4)
     driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
    
-    time.sleep(5)
+    time.sleep(7)
 
     meals_left = driver.find_element('id','MainContent_mprWeekValue').text
     return meals_left
