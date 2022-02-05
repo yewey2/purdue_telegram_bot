@@ -27,7 +27,7 @@ from telegram import (
 # PW = os.environ.get('PW')
 API_KEY = os.environ.get('API_KEY')
 BOT_HANDLE = os.environ.get('BOT_HANDLE')
-DEBUG = True
+DEBUG = False
 
 def main(username='', password='',):
     options = webdriver.ChromeOptions() 
