@@ -22,12 +22,14 @@ from telegram import (
 
 )
 
-
-# USER = os.environ.get('USER')
-# PW = os.environ.get('PW')
 API_KEY = os.environ.get('API_KEY')
 BOT_HANDLE = os.environ.get('BOT_HANDLE')
 DEBUG = True
+
+from cryptography.fernet import Fernet
+FERNET_KEY = os.environ.get('FERNET_KEY') # This is a string
+key_b = FERNET_KEY.encode('utf-8') # Convert to Bytes
+CIPHER_SUITE = Fernet(FERNET_KEY)
 
 def main(username='', password='',):
     options = webdriver.ChromeOptions() 
@@ -50,10 +52,10 @@ def main(username='', password='',):
     passfield.send_keys(password)
 
     submit_btn1 = driver.find_element('name',"submit").click()
-    time.sleep(2)
+    time.sleep(4)
     driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
    
-    time.sleep(5)
+    time.sleep(7)
 
     meals_left = driver.find_element('id','MainContent_mprWeekValue').text
     return meals_left
@@ -67,8 +69,8 @@ dispatcher = updater.dispatcher
 
 def start_command(update,context):
     """Initializes the bot"""
-    text = 'Hello '+(update.message.from_user.first_name or '@'+update.message.from_user.username )+'!\n'
-    text+= 'Use me to guide you through your Boilermaker journey :) For more info, send /help'
+    text = 'Hello '+(update.message.from_user.first_name or '@'+update.message.from_user.username )+'! '
+    text+= 'Use me to guide you through your Boilermaker journey :) \n\nDo read the /terms of use before using the bot. For more info, send /help'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text)
@@ -91,9 +93,11 @@ dispatcher.add_handler(help_handler)
 def terms_command(update,context):
     """Terms command"""
     text = """\
-This bot stores your username and password in a secure database. \
-We will not use your information unlawfully. Use it at your own risk!\n\n\
-For more information, please contact @fluffballz through telegram.\
+**NOTICE** This bot stores your username and PIN in a secure database.\n\n\
+Your password will be encrypted, and stored in a secure database. By using this bot, you are consent the developers (@fluffballz) to save an encrypted set of password on our databases.\n\n\
+The developers will never access your sensitive information without your consent. We will not use your information unlawfully, or share your information with any third parties. \
+Despite these precautions, no system is a 100 percent safe. The developers will not be responsible in the unfortunate event of a cyber attack, data breaches, or some other unforeseen circumstances. Use this at your own risk!\n\n\
+For more information, please contact @fluffballz through telegram, or access the Github source code here: https://github.com/yewey2/purdue_telegram_bot\
 """
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -114,6 +118,7 @@ def swipes_command(update,context):
         return
     username = user_data.get('username')
     password = user_data.get('password')
+    password = CIPHER_SUITE.decrypt(password.value).decode('utf-8') # Decrypting password
     text = 'Please login with DuoMobile, and allow for ~30 seconds for me to retrieve your info!'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -168,13 +173,15 @@ def login_done(update,context):
     if len(password) == 4 and password.isdigit():
         password += ",push"
     username = context.user_data['username']
+    password = CIPHER_SUITE.encrypt(bytes(password, 'utf-8')) # Encrypt password before storing
     chat_id = update.message.from_user.id
     db.set_user_data(chat_id, username, password)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=f"Your username and password is as follows:\n\
-\nUsername: {username} \nPassword: {password} \n\n\
-If this information is incorrect, please /login again."
+        text=f"\
+Your username and password are shown above. \
+Do delete the messages once you have confirmed that they are correct for better security.\n\
+If the information is incorrect, please /login again."
     )
     return -1
 
