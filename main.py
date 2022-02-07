@@ -26,7 +26,7 @@ from telegram import (
 
 API_KEY = os.environ.get('API_KEY')
 BOT_HANDLE = os.environ.get('BOT_HANDLE')
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', False)
 
 ACCESS_KEY = os.environ.get('ACCESS_KEY')
 SECRET_KEY = os.environ.get('SECRET_KEY')
