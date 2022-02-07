@@ -175,8 +175,8 @@ dispatcher = updater.dispatcher
 
 def start_command(update,context):
     """Initializes the bot"""
-    text = 'Hello '+(update.message.from_user.first_name or '@'+update.message.from_user.username )+'!\n\n'
-    text+= 'Use me to guide you through your Boilermaker journey :) Do read the /terms of use before using the bot. For more info, send /help'
+    text = 'Hello '+(update.message.from_user.first_name or '@'+update.message.from_user.username )+'! '
+    text+= 'Use me to guide you through your Boilermaker journey :) \n\nDo read the /terms of use before using the bot. For more info, send /help'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text)
