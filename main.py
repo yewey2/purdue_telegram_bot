@@ -24,7 +24,7 @@ from telegram import (
 
 API_KEY = os.environ.get('API_KEY')
 BOT_HANDLE = os.environ.get('BOT_HANDLE')
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', False)
 
 from cryptography.fernet import Fernet
 FERNET_KEY = os.environ.get('FERNET_KEY') # This is a string
