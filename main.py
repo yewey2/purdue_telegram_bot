@@ -36,6 +36,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 REGION_NAME = os.environ.get('REGION_NAME')
 TABLE_NAME = os.environ.get('TABLE_NAME')
 
+from cryptography.fernet import Fernet
+FERNET_KEY = os.environ.get('FERNET_KEY') # This is a string
+key_b = FERNET_KEY.encode('utf-8') # Convert to Bytes
+CIPHER_SUITE = Fernet(FERNET_KEY)
+
 def create_table(dynamodb=None):
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb',
@@ -115,6 +120,7 @@ def set_user_data(chat_id=None, username="", password="", dynamodb=None):
         )
     table = dynamodb.Table(TABLE_NAME)
     try:
+        password = CIPHER_SUITE.encrypt(bytes(password, 'utf-8'))
         response = table.update_item(
             Key={
                 'chat_id': chat_id,
@@ -197,9 +203,11 @@ dispatcher.add_handler(help_handler)
 def terms_command(update,context):
     """Terms command"""
     text = """\
-This bot stores your username and password in a secure database. \
-We will not use your information unlawfully. Use it at your own risk!\n\n\
-For more information, please contact @fluffballz through telegram.\
+**NOTICE** This bot stores your username and PIN in a secure database.\n\n\
+Your password will be encrypted, and stored in a secure database. By using this bot, you are consent the developers (@fluffballz) to save an encrypted set of password on our databases.\n\n\
+The developers will never access your sensitive information without your consent. We will not use your information unlawfully, or share your information with any third parties. \
+Despite these precautions, no system is a 100 percent safe. The developers will not be responsible in the unfortunate event of a cyber attack, or some other unforeseen circumstances. Use this at your own risk!\n\n\
+For more information, please contact @fluffballz through telegram, or access the Github source code here: https://github.com/yewey2/purdue_telegram_bot\
 """
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -220,6 +228,7 @@ def swipes_command(update,context):
         return
     username = user_data.get('username')
     password = user_data.get('password')
+    password = CIPHER_SUITE.decrypt(password.value).decode('utf-8') # Decrypting password
     text = 'Please login with DuoMobile, and allow for ~30 seconds for me to retrieve your info!'
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -278,7 +287,7 @@ def login_done(update,context):
     set_user_data(chat_id, username, password)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=f"Your username and password is as follows:\n\
+        text=f"Your username and PIN is as follows:\n\
 \nUsername: {username} \nPassword: {password} \n\n\
 If this information is incorrect, please /login again."
     )
