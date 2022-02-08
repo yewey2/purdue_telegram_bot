@@ -161,7 +161,7 @@ def main(username='', password='',):
     time.sleep(4)
     driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
    
-    time.sleep(7)
+    time.sleep(10)
 
     meals_left = driver.find_element('id','MainContent_mprWeekValue').text
     return meals_left
