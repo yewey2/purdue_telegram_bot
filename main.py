@@ -2,8 +2,11 @@ from random import random
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-import time
+# import time
 import os
 import boto3
 from botocore.exceptions import ClientError
@@ -151,19 +154,29 @@ def main(username='', password='',):
 
     driver.get('https://eacct-purdue-sp.transactcampus.com/purdueeaccounts/AnonymousHome.aspx')
     driver.find_element('id',"MainContent_SignInButton").click()
-    time.sleep(2)
-    userfield = driver.find_element('id','username')
-    passfield = driver.find_element('id','password')
-    userfield.send_keys(username)
-    passfield.send_keys(password)
+    WebDriverWait(driver, 2).until(
+        EC.presence_of_element_located((By.ID, 'username'))
+    ) # Wait for form to load
 
-    submit_btn1 = driver.find_element('name',"submit").click()
-    time.sleep(4)
-    driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
-   
-    time.sleep(10)
+    driver.find_element('id','username').send_keys(username)
+    driver.find_element('id','password').send_keys(password)
+    driver.find_element('name',"submit").click()
 
-    meals_left = driver.find_element('id','MainContent_mprWeekValue').text
+    DivPanelBoard = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, 'MainContent_DivPanelBoard_84'))
+    ) # Wait for meals page to load
+    DivPanelBoard.click()
+
+    mprWeekValue = WebDriverWait(driver, 20).until(
+        EC.presence_of_element_located((By.ID, 'MainContent_mprWeekValue'))
+    ) # Wait for meal swipes to be available
+    meals_left = mprWeekValue.text
+
+    # Old Code with sleep
+    # time.sleep(4)
+    # driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
+    # time.sleep(10)
+    # meals_left = driver.find_element('id','MainContent_mprWeekValue').text 
     return meals_left
 
 
