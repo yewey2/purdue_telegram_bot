@@ -2,6 +2,9 @@ from random import random
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import os
@@ -34,30 +37,41 @@ CIPHER_SUITE = Fernet(FERNET_KEY)
 def main(username='', password='',):
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
-    #options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("--disable-blink-features=AutomationControlled")
     driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)#, executable_path=r'C:\bin\chromedriver.exe') #edit path to webdriver
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.53 Safari/537.36'})
+    driver.implicitly_wait(5)
 
 
     driver.get('https://eacct-purdue-sp.transactcampus.com/purdueeaccounts/AnonymousHome.aspx')
     driver.find_element('id',"MainContent_SignInButton").click()
-    time.sleep(2)
-    userfield = driver.find_element('id','username')
-    passfield = driver.find_element('id','password')
-    userfield.send_keys(username)
-    passfield.send_keys(password)
+    WebDriverWait(driver, 2).until(
+        EC.presence_of_element_located((By.ID, 'username'))
+    ) # Wait for form to load
 
-    submit_btn1 = driver.find_element('name',"submit").click()
-    time.sleep(4)
-    driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
-   
-    time.sleep(7)
+    driver.find_element('id','username').send_keys(username)
+    driver.find_element('id','password').send_keys(password)
+    driver.find_element('name',"submit").click()
 
-    meals_left = driver.find_element('id','MainContent_mprWeekValue').text
+    DivPanelBoard = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, 'MainContent_DivPanelBoard_84'))
+    ) # Wait for meals page to load
+    DivPanelBoard.click()
+
+    mprWeekValue = WebDriverWait(driver, 20).until(
+        EC.presence_of_element_located((By.ID, 'MainContent_mprWeekValue'))
+    ) # Wait for meal swipes to be available
+    meals_left = mprWeekValue.text
+
+    # Old Code with sleep
+    # time.sleep(4)
+    # driver.find_element('id',"MainContent_DivPanelBoard_84").click() #<div>
+    # time.sleep(10)
+    # meals_left = driver.find_element('id','MainContent_mprWeekValue').text 
     return meals_left
 
 
@@ -180,7 +194,7 @@ def login_done(update,context):
         chat_id=update.effective_chat.id,
         text=f"\
 Your username and password are shown above. \
-Do delete the messages once you have confirmed that they are correct for better security.\n\
+Do delete the messages once you have confirmed that they are correct for better security.\
 If the information is incorrect, please /login again."
     )
     return -1
