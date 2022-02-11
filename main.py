@@ -404,6 +404,8 @@ convo_handler = ConversationHandler(
     )
 dispatcher.add_handler(convo_handler)
 
+from testing import test_command
+dispatcher.add_handler(CommandHandler('test', test_command))
 
 if __name__ == "__main__":
     # main()
