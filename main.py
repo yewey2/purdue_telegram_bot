@@ -239,9 +239,10 @@ def setup_command(update,context):
         return
     text = """
 1. Please go to the BoilerKey settings (https://purdue.edu/boilerkey) \
-and click on 'Set up a new Duo Mobile BoilerKey'
-2. Follow the process until you see the qr code
-3. Paste the link (https://m-1b9bef70.duosecurity.com/activate/XXXXXXXXXXX) \
+and click on \'Manage\' > \'Add or Remove your Duo Mobile BoilerKeys\'
+2. Add a new device
+3. Follow the process until you see the QR code (in Step 4)
+4. Paste the link (https://m-1b9bef70.duosecurity.com/activate/XXXXXXXXXXX) \
 under the qr code and send it to me!"""
     text+= "\n\nTo stop, send /cancel"
 
