@@ -5,3 +5,4 @@ webdriver_manager==3.5.2
 boto3==1.20.23
 botocore==1.23.23
 cryptography==36.0.0
+pyotp==2.6.0
