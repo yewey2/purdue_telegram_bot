@@ -154,9 +154,6 @@ def swipes_command(update,context):
             chat_id=update.effective_chat.id,
             text=text)
         return
-    username = user_data.get('username')
-    password = get_password(user_data)
-    print(password)
     text = 'Please allow me ~30 seconds to retrieve your info!\nIf you have not /setup your BoilerKey with me, please click \"Approve\" on DuoMobile.'
     context.bot.send_message(
         chat_id=update.effective_chat.id,

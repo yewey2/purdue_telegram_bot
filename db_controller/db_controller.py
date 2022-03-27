@@ -119,9 +119,10 @@ def set_user_boilerkey(chat_id=None, config="", dynamodb=None):
             Key={
                 'chat_id': chat_id,
             },
-            UpdateExpression="set config=:c",
+            UpdateExpression="set config=:c, passwordAt=:n",
             ExpressionAttributeValues={
                 ':c': config,
+                ':n': 1,
             },
             ReturnValues="UPDATED_NEW"
         )
