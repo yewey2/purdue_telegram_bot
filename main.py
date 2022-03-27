@@ -31,7 +31,6 @@ from telegram import (
 API_KEY = os.environ.get('API_KEY')
 BOT_HANDLE = os.environ.get('BOT_HANDLE')
 DEBUG = os.environ.get('DEBUG', False)
-print(API_KEY)
 ACCESS_KEY = os.environ.get('ACCESS_KEY')
 SECRET_KEY = os.environ.get('SECRET_KEY')
 REGION_NAME = os.environ.get('REGION_NAME')
@@ -60,7 +59,7 @@ def main(username='', password='', user_data=dict()):
         password = get_password(user_data)
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -117,10 +116,13 @@ dispatcher.add_handler(start_handler)
 
 def help_command(update,context):
     """Help command"""
-    text = """/login - Login to access your number of meal swipes left!
-/setup - Sets up your BoilerKey, so you don\'t have to use DuoMobile every time!
-/swipes - Get your remaining meal swipes for the week.
-/terms - Terms of use of the bot"""
+    text = """Hey there! Welcome to BoilerBro. Here\'s a helpful guide on how to use me :)
+
+1. To start off, please /login first with your Purdue username and pin.
+2. You can also /setup your BoilerKey if you don\'t want to authenticate with DuoMobile every time!
+3. Use /swipes gets your remaining meal swipes for the week. More features coming your way soon...
+
+Please do read the /terms of use of the bot before using me. Boiler up!"""
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=text)
@@ -143,77 +145,6 @@ For more information, please contact @fluffballz through telegram, or access the
 
 terms_handler = CommandHandler('terms', terms_command)
 dispatcher.add_handler(terms_handler)
-
-
-def pika_command(update,context):
-    """Sends a pikachu sticker"""
-    try:
-        if random.random() < 0.01:
-            return context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text="Pika... boo? 🙂"
-            )
-        pika_list = [
-            'pikachu',
-            'pikachu2',
-            'PikachuDetective',
-            'pikachu6',
-            'pikach',
-            'pikach_memes',
-            'PikachyAnim',
-            ]
-        pikas = []
-        for pika in pika_list:
-            pikas.extend(context.bot.get_sticker_set(pika).stickers)
-        pikas.extend(context.bot.get_sticker_set('uwumon').stickers[:20])
-        pika = random.choice(pikas)
-        context.bot.send_sticker(
-            chat_id=update.effective_chat.id,
-            sticker=pika
-        )
-        print(update.effective_chat.title, update.effective_chat.id, update.message.from_user.username, update.message.from_user.first_name)
-    except Exception as e:
-        print(e)
-
-pika_handler = CommandHandler('pika', pika_command)
-dispatcher.add_handler(pika_handler)
-
-def ohno_command(update,context):
-    """Sends a version of "Oh no"..."""
-    text = random.choice([
-        "OH NO!",
-        "Oh no indeed...",
-        "Oh no",
-        "Ah, that is not ideal",
-        "This is a pleasant surprise without the pleasant",
-        "Goodness gracious me!",
-        "Oh noes",
-        "Das not good",
-        "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaah",
-        "How could this happen?!",
-        "This calls for an 'Oh no'.",
-        "F in the chat",
-        "What did you do!?",
-        "Seriously...",
-        "ono",
-        "FSKSJFLKSDJFH",
-        "My condolences",
-        "Rest in peace good sir",
-        "ohhh myyy gawwwd",
-        "OMG!",
-        "oh no",
-        "oh no...?",
-        "Bless you",
-        "Are you sure you didn't mean 'Oh yes'?",
-        "This is truly a disaster",
-        "...",
-        ])
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=text)
-
-ohno_handler = CommandHandler('ohno', ohno_command)
-dispatcher.add_handler(ohno_handler)
 
 def swipes_command(update,context):
     """Get meal swipes"""
@@ -394,6 +325,11 @@ dispatcher.add_handler(convo_handler)
 
 from testing import test_command
 dispatcher.add_handler(CommandHandler('test', test_command))
+
+from fun import pika_command, ohno_command
+# Fun commands :)
+dispatcher.add_handler(CommandHandler('pika', pika_command))
+dispatcher.add_handler(CommandHandler('ohno', ohno_command))
 
 if __name__ == "__main__":
     # main()
