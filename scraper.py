@@ -62,8 +62,8 @@ def get_dollars(username='', password='', user_data=dict()):
     driver = get_page(username, password)
 
     span = WebDriverWait(driver, 20).until(
-        EC.presence_of_element_located((By.ID, 'MainContent_StoredValueAccountBalanceLabel_c3556b03-6f04-45c6-97f2-9c2dc0bfa96f'))
-    ) # Wait for meal swipes to be available
+        EC.presence_of_element_located((By.CLASS_NAME, 'accountBalance'))
+    ) # Wait for Dining Dollars to be available
     dollars = span.text[:-4]
 
     return dollars
