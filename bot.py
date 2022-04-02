@@ -128,7 +128,7 @@ def dollars_command(update,context):
     try:
         meals_left = get_dollars(user_data = user_data) #username, password)
         text = 'Hey '+(update.message.from_user.first_name or '@'+update.message.from_user.username )+', '
-        text += f'you have ${meals_left} Dining Dollars Remaining'
+        text += f'you have ${meals_left} Dining Dollars remaining!'
     except Exception as e:
         text = 'Failed to get your dining dollars... Please try again'
         print(e)
