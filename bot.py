@@ -55,7 +55,9 @@ def help_command(update,context):
 
 1. To start off, please /login first with your Purdue username and pin.
 2. You can also /setup your BoilerKey if you don\'t want to authenticate with DuoMobile every time!
-3. Use /swipes gets your remaining meal swipes for the week. More features coming your way soon...
+
+3. /swipes gets your remaining meal swipes for the week. 
+4. /dollars gets your remaining Dining Dollars.
 
 Please do read the /terms of use of the bot before using me. Boiler up!"""
     context.bot.send_message(
