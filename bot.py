@@ -35,7 +35,7 @@ CIPHER_SUITE = Fernet(FERNET_KEY)
 
 LOGGING = False
 
-updater = Updater(token=API_KEY, use_context=True)
+updater = Updater(token=API_KEY, use_context=True, workers=10)
 dispatcher = updater.dispatcher
 
 def start_command(update,context):
@@ -111,7 +111,7 @@ def swipes_command(update,context):
         chat_id=update.effective_chat.id,
         text=text)
 
-swipes_handler = CommandHandler('swipes', swipes_command)
+swipes_handler = CommandHandler('swipes', swipes_command, run_async=True)
 dispatcher.add_handler(swipes_handler)
 
 def dollars_command(update,context):
@@ -142,7 +142,7 @@ def dollars_command(update,context):
         chat_id=update.effective_chat.id,
         text=text)
 
-dispatcher.add_handler(CommandHandler('dollars', dollars_command))
+dispatcher.add_handler(CommandHandler('dollars', dollars_command, run_async=True))
 
 def login_command(update,context):
     """Lets the user login to their account"""
