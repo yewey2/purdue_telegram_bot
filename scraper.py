@@ -13,7 +13,7 @@ import getpin
 def get_page(username, password):
     options = webdriver.ChromeOptions() 
     options.add_argument("start-maximized")
-    options.add_argument('--headless')
+    #options.add_argument('--headless')
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -42,10 +42,15 @@ def get_swipes(username='', password='', user_data=dict()):
     
     driver = get_page(username, password)
 
+    # DivPanelBoard = WebDriverWait(driver, 10).until(
+    #     EC.presence_of_element_located((By.ID, 'MainContent_DivPanelBoard_84'))
+    # ) # Wait for meals page to load
+    # DivPanelBoard.click()
+
     DivPanelBoard = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, 'MainContent_DivPanelBoard_84'))
+        EC.presence_of_all_elements_located((By.CLASS_NAME, 'account'))
     ) # Wait for meals page to load
-    DivPanelBoard.click()
+    DivPanelBoard[1].click()
 
     mprWeekValue = WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.ID, 'MainContent_mprWeekValue'))
@@ -70,5 +75,5 @@ def get_dollars(username='', password='', user_data=dict()):
 
 if __name__ == "__main__":
     print(f'User: {os.environ.get("USER")}, Password: {os.environ.get("PW")}')
-    print('Testing dining dollars')
-    print(get_dollars(os.environ.get("USER"),os.environ.get('PW')))
+    print('Testing swipes')
+    print(get_swipes(os.environ.get("USER"),os.environ.get('PW')))
